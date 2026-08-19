@@ -3,6 +3,7 @@ package com.hchn.passwordvault
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -440,6 +441,12 @@ private fun copyTemporarily(context: Context, value: String) {
     clipboard.setPrimaryClip(ClipData.newPlainText("密码", value))
     Handler(Looper.getMainLooper()).postDelayed({
         val current = clipboard.primaryClip?.getItemAt(0)?.coerceToText(context)?.toString()
-        if (current == value) clipboard.clearPrimaryClip()
+        if (current == value) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                clipboard.clearPrimaryClip()
+            } else {
+                clipboard.setPrimaryClip(ClipData.newPlainText("", ""))
+            }
+        }
     }, 30_000L)
 }
